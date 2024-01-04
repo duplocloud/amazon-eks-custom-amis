@@ -1,4 +1,4 @@
-instance_type   = "c6i.large"
+instance_type   = "t3.small"
 ami_description = "Amazon EKS Kubernetes AMI based on AmazonLinux2 OS"
 
 ami_block_device_mappings = [

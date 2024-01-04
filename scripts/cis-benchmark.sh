@@ -59,6 +59,11 @@ unload_module squashfs
 echo "1.1.1.3 - ensure mounting of udf filesystems is disabled"
 unload_module udf
 
+echo "1.1.1.4 - ensure mounting of FAT filesystems is disabled"
+unload_module fat
+unload_module vfat
+unload_module msdos
+
 echo "1.1.6 - 1.1.9 - ensure noexec,nodev,nosuid option set on /dev/shm"
 echo "tmpfs  /dev/shm  tmpfs  defaults,nodev,nosuid,noexec  0 0" >> /etc/fstab
 mount -a
@@ -307,21 +312,23 @@ yum_remove telnet
 echo "2.2.5 - ensure LDAP client is not installed"
 yum_remove openldap-clients
 
-echo "3.2.1 - ensure IP forwarding is disabled"
-sysctl_entry "net.ipv4.ip_forward = 0"
+echo "3.1.1 - ensure ipv6 is disabled"
+sysctl_entry "net.ipv6.conf.all.disable_ipv6 = 1"
+sysctl_entry "net.ipv6.conf.default.disable_ipv6 = 1"
+
+# echo "3.2.1 - ensure IP forwarding is disabled"
+# sysctl_entry "net.ipv4.ip_forward = 0"
 sysctl_entry "net.ipv6.conf.all.forwarding = 0"
 
 echo "3.2.2 - ensure packet redirect sending is disabled"
 sysctl_entry "net.ipv4.conf.all.send_redirects = 0"
 sysctl_entry "net.ipv4.conf.default.send_redirects = 0"
 
-
 echo "3.3.1	ensure source routed packets are not accepted"
 sysctl_entry "net.ipv4.conf.all.accept_source_route = 0"
 sysctl_entry "net.ipv4.conf.default.accept_source_route = 0"
 sysctl_entry "net.ipv6.conf.all.accept_source_route = 0"
 sysctl_entry "net.ipv6.conf.default.accept_source_route = 0"
-
 
 echo "3.3.2	ensure ICMP redirects are not accepted"
 sysctl_entry "net.ipv4.conf.all.accept_redirects = 0"
@@ -342,6 +349,10 @@ sysctl_entry "net.ipv4.icmp_echo_ignore_broadcasts = 1"
 
 echo "3.3.6	ensure bogus ICMP responses are ignored"
 sysctl_entry "net.ipv4.icmp_ignore_bogus_error_responses = 1"
+
+echo "3.3.7 - ensure Reverse Path Filtering is enabled"
+sysctl_entry "net.ipv4.conf.all.rp_filter = 1"
+sysctl_entry "net.ipv4.conf.default.rp_filter = 1"
 
 echo "3.3.8	ensure TCP SYN Cookies is enabled"
 sysctl_entry "net.ipv4.tcp_syncookies = 1"
@@ -480,7 +491,9 @@ echo "-w /usr/share/selinux/ -p wa -k MAC-policy" >> /etc/audit/rules.d/cis.rule
 
 echo "4.1.7 - ensure login and logout events are collected"
 echo "-w /var/log/lastlog -p wa -k logins" >> /etc/audit/rules.d/cis.rules
+echo "-w /var/run/faillog/ -p wa -k logins" >> /etc/audit/rules.d/cis.rules
 echo "-w /var/run/faillock/ -p wa -k logins" >> /etc/audit/rules.d/cis.rules
+echo "-w /var/run/tallylog/ -p wa -k logins" >> /etc/audit/rules.d/cis.rules
 
 echo "4.1.8 - ensure session initiation information is collected"
 echo "-w /var/run/utmp -p wa -k session" >> /etc/audit/rules.d/cis.rules
@@ -521,6 +534,7 @@ echo "-w /etc/sudoers.d/ -p wa -k scope" >> /etc/audit/rules.d/cis.rules
 echo "4.1.15 - ensure system administrator command executions (sudo) are collected"
 echo "-a always,exit -F arch=b32 -C euid!=uid -F euid=0 -F auid>=1000 -F auid!=4294967295 -S execve -k actions" >> /etc/audit/rules.d/cis.rules
 echo "-a always,exit -F arch=b64 -C euid!=uid -F euid=0 -F auid>=1000 -F auid!=4294967295 -S execve -k actions" >> /etc/audit/rules.d/cis.rules
+echo "-w /var/log/sudo.log -p wa -k actions" >> /etc/audit/rules.d/cis.rules
 
 echo "4.1.16 - ensure kernel module loading and unloading is collected"
 echo "-w /sbin/insmod -p x -k modules" >> /etc/audit/rules.d/cis.rules
@@ -610,6 +624,8 @@ echo "Storage=persistent" >> /etc/systemd/journald.conf
 
 echo "4.2.3 - ensure rsyslog or syslog-ng is installed"
 echo "[not scored] - handled by previous steps"
+echo "4.2.3 - Ensure permissions on all logfiles are configured"
+find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-wx,o-rwx "{}" +
 
 echo "4.2.4 - ensure permissions on all logfiles are configured"
 # Update the systemd unit that produces the dmesg log to have a corrected umask,
@@ -726,6 +742,8 @@ LoginGraceTime 60
 Banner /etc/issue.net
 maxstartups 10:30:60
 AllowTcpForwarding no
+# 5.2.22
+MaxSessions 10
 EOF
 
 echo "5.3.18 - ensure SSH access is limited"
