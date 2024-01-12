@@ -236,7 +236,7 @@ chown root:root /etc/issue.net
 chmod 644 /etc/issue.net
 
 echo "1.8 - ensure updates, patches, and additional security software are installed"
-yum update -y
+yum update -y --disableplugin=priorities,versionlock
 
 echo "2.1.1.2 - ensure chrony is configured"
 sed  -i  s/'OPTIONS=.*'/'OPTIONS="-F 2 -u chrony"'/ /etc/sysconfig/chronyd
@@ -938,3 +938,20 @@ cat /etc/shadow | awk -F: '($2 == "" ) { print $1 " does not have a password "}'
 
 echo "6.2.1 - ensure password fields are not empty"
 cat /etc/shadow | awk -F: '($2 == "" ) { print $1 " does not have a password "}'
+
+###### Upgrade the kernel ######
+# Remove kernel version locks
+yum versionlock list | grep "kernel-" | xargs yum versionlock delete
+# Get the current and upgraded kernel versions available, compare and then upgrade only if required.
+current_kernel=`amazon-linux-extras | grep kernel | grep latest | tail -1 | awk '{print $2}' | tr -cd '[:digit:].'`
+upgrade_kernel=`amazon-linux-extras | grep kernel | grep -v latest | tail -1 | awk '{print $2}' | tr -cd '[:digit:].'`
+echo "Current Kernel Version: $current_kernel\nUpgrade Kernel Version: $upgrade_kernel"
+if (( $(echo "$upgrade_kernel > $current_kernel" |bc -l) )); then
+  echo "Upgrade Required!"
+  amazon-linux-extras disable kernel-$current_kernel
+  amazon-linux-extras install kernel-$upgrade_kernel -y
+  amazon-linux-extras | grep kernel
+else
+  echo "Kernel already up-to-date, upgrade not required!"
+fi
+
