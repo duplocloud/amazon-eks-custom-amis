@@ -202,8 +202,6 @@ This library is licensed under the MIT-0 License. See the [LICENSE file](./LICEN
 
 ## Duplo Specific Instructions for CIS-Hardened and Kernel-Upgraded AMI.
 
-####
-
 :warning: Please ensure the aws-profile being used has `ec2:StopInstances` permission else the operation will fail in between.
 
 ```
