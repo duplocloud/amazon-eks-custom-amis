@@ -4,14 +4,14 @@ ami_description = "Amazon EKS Kubernetes AMI based on AmazonLinux2 OS"
 ami_block_device_mappings = [
   {
     device_name = "/dev/xvda"
-    volume_size = 10
+    volume_size = 20
   },
 ]
 
 launch_block_device_mappings = [
   {
     device_name = "/dev/xvda"
-    volume_size = 10
+    volume_size = 20
   },
   {
     device_name = "/dev/xvdb"

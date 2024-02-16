@@ -10,7 +10,7 @@ locals {
 }
 
 data "amazon-parameterstore" "this" {
-  name   = "/aws/service/eks/optimized-ami/${var.eks_version}/${var.ami_type}/recommended/image_id"
+  name   = "/aws/service/eks/optimized-ami/${var.eks_version}/${var.ami_type}/x86_64/standard/recommended/image_id"
   region = var.region
 }
 
