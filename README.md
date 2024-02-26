@@ -206,5 +206,5 @@ This library is licensed under the MIT-0 License. See the [LICENSE file](./LICEN
 :warning: Please ensure the aws-profile being used has `ec2:StopInstances` permission else the operation will fail in between.
 
 ```
-AWS_PROFILE=<aws-profile> packer build -var-file=al2_amd64.pkrvars.hcl -var 'subnet_id=subnet-<public-subnet-id>' -var 'vpc_id=<vpc-id>' -var 'region=<aws-region>'  -var 'eks_version=<EKS-Version>' -var 'custom_al2_eks_source_ami=<AMI-ID>' .
+AWS_PROFILE=<aws-profile> packer build -var-file=al2_amd64.pkrvars.hcl -var 'subnet_id=subnet-<public-subnet-id>' -var 'vpc_id=<vpc-id>' -var 'region=<aws-region>'  -var 'eks_version=<EKS-Version>' -var 'custom_al2_eks_source_ami=<AMI-ID>' -var 'ami_regions=["<region-1-to-copy>","<region-2-to-copy>"]' .
 ```
