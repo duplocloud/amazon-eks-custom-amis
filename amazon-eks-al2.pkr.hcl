@@ -198,7 +198,7 @@ source "amazon-ebs" "this" {
   session_manager_port    = var.session_manager_port
   shutdown_behavior       = var.shutdown_behavior
   skip_profile_validation = var.skip_profile_validation
-  source_ami              = data.amazon-parameterstore.this.value
+  source_ami              = var.custom_al2_eks_source_ami == "" ? data.amazon-parameterstore.this.value : var.custom_al2_eks_source_ami
 
   dynamic "subnet_filter" {
     for_each = length(var.subnet_filter) > 0 ? var.subnet_filter : []

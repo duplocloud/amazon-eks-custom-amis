@@ -692,3 +692,8 @@ variable "shell_provisioner3" {
   description = "Values passed to the third/last shell provisioner"
   default     = {}
 }
+
+variable "custom_al2_eks_source_ami" {
+  description = "Custom AL2 EKS AMI ID to be used instead of Standard AMI"
+  default = ""
+}
