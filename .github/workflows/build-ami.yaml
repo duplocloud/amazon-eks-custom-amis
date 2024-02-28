@@ -51,6 +51,7 @@ jobs:
       - name: Build AMI
         run: |
           ami_regions=`sed -r 's/,/","/g' <<< "${{ inputs.ami_regions }}"`
+          echo "$ami_regions"
           packer build -var-file=al2_amd64.pkrvars.hcl \
             -var 'subnet_id=${{ inputs.subnet_id }}' \
             -var 'region=${{ inputs.region }}'  -var 'eks_version=${{ inputs.eks_version }}' \
