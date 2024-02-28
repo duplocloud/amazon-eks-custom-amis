@@ -50,11 +50,9 @@ jobs:
           packer init -upgrade .
       - name: Build AMI
         run: |
-          ami_regions=`sed -r 's/,/","/g' <<< "${{ inputs.ami_regions }}"`
-          echo "$ami_regions"
           packer build -var-file=al2_amd64.pkrvars.hcl \
             -var 'subnet_id=${{ inputs.subnet_id }}' \
             -var 'region=${{ inputs.region }}'  -var 'eks_version=${{ inputs.eks_version }}' \
             -var 'custom_al2_eks_source_ami=${{ inputs.custom_al2_eks_source_ami }}' \
-            -var 'ami_regions=["$ami_regions"]' .
+            -var 'ami_regions=["${{ inputs.ami_regions }}"]' .
                   
