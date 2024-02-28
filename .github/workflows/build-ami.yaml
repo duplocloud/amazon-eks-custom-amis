@@ -1,0 +1,39 @@
+---
+name: build-ami
+on:
+  workflow_dispatch:
+    inputs:
+      public_subnet_id:
+        description: "Subnet ID with Internet access for spawning the instance"
+        required: true
+      region:
+        description: "The name of the region, such as us-east-1, in which to launch the EC2 instance to create the AMI"
+        required: true
+      eks_version: 
+        description: "The EKS cluster version associated with the AMI created"
+        required: true
+      custom_al2_eks_source_ami:
+        description: "[Option] Use this option to provide custom EKS AL2 AMI ID as a source AMI"
+      ami_regions:
+        description: "A list of regions to copy the AMI to. Tags and attributes are copied along with the AMI. AMI copying takes time depending on the size of the AMI, but will generally take many minutes"
+env:
+  duplo_host: "https://tyfone-dev.duplocloud.net"
+  duplo_token: ${{ secrets.DUPLO_TOKEN }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get AWS Credentials
+        uses: duplocloud/ghactions-aws-jit@master
+        with:
+          admin: true
+      - name: Install Packer
+        run: |
+          # https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli#installing-packer
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install packer
+          packer
+                  
