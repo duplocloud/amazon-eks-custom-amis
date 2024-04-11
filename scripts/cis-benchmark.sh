@@ -377,7 +377,8 @@ echo "3.5.3.2.1-3.5.3.2.6 ensure iptables  rules configures"
 #-F
 
 # Allow inbound traffic for kubelet (so kubectl logs/exec works)
-iptables -I INPUT -p tcp -m tcp --dport 10250 -j ACCEPT
+# Allow multiple ports(9100 & 30880) for enabling metrics
+iptables -I INPUT -p tcp -m multiport --dports 10250,9100,30880 -j ACCEPT
 
 # 3.5.3.2.3 ensure iptables rules exist for all open ports
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -j ACCEPT
@@ -415,7 +416,8 @@ echo "3.5.3.3.1-3.5.3.3.6 ensure ip6tables  rules configures"
 #-F
 
 # Allow inbound traffic for kubelet (so kubectl logs/exec works)
-ip6tables -I INPUT -p tcp -m tcp --dport 10250 -j ACCEPT
+# Allow multiple ports(9100 & 30880) for enabling metrics
+ip6tables -I INPUT -p tcp -m multiport --dports 10250,9100,30880 -j ACCEPT
 
 # 3.5.3.3.3 ensure iptables rules exist for all open ports
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -j ACCEPT
