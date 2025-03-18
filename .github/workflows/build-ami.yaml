@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       duplo_host:
-        description: "The Duplo host to use for AWS credentials"
+        description: "The Duplo host to use for AWS credentials. Accordingly set DUPLO_TOKEN in the 'settings->secrets->actions' section of this repository."
         required: true
         default: "https://tyfone-dev.duplocloud.net"
       public_subnet_id:
